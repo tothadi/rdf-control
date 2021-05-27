@@ -15,7 +15,6 @@ let weightBuffer = [];
 
 const
     startComm = () => {
-        socket.on('error', errorEventHandler);
         socket.connect(port, host, () => {
             socket.on('timeout', timeoutEventHandler);
             socket.on('readable', onReadable);
@@ -24,13 +23,12 @@ const
         })
     },
     stopComm = () => {
-        socket.on('error', errorEventHandler);
         socket.destroy();
         socket.removeAllListeners();
-    }
-endEventHandler = () => {
-    console.log('end');
-},
+    },
+    endEventHandler = () => {
+        console.log('end');
+    },
     timeoutEventHandler = () => {
         console.log(`Timeout - reconnection in 3 seconds...`);
         socket.removeAllListeners();
@@ -69,9 +67,16 @@ endEventHandler = () => {
     };
 
 module.exports.weigh = (status) => {
-    stopComm();
+
+    socket.on('error', errorEventHandler);
 
     switch (status) {
+        case true:
+            startComm();
+            break;
+        case false:
+            stopComm();
+            break;
         case 1://külső nyit, belső zár
             bar(3);
             bar(2);
